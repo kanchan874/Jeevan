@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+/* LIGHT MODE DEFAULT THEME VARS */
+:root, .light {
+  --app-bg: #f8fafc;
+  --app-fg: #0f172a;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --input-bg: #f1f5f9;
+  --input-border: #cbd5e1;
+  --text-muted: #64748b;
+  --text-heading: #0f172a;
+  --subtle-bg: #f1f5f9;
+  --shadow-val: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  --body-radial: radial-gradient(at 0% 0%, rgba(239, 68, 68, 0.04) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(241, 245, 249, 0.5) 0px, transparent 50%);
+}
+
+/* DARK MODE OVERRIDE THEME VARS */
+.dark {
+  --app-bg: #09090b;
+  --app-fg: #f8fafc;
+  --card-bg: #121217;
+  --card-border: rgba(255, 255, 255, 0.12);
+  --input-bg: #18181f;
+  --input-border: rgba(255, 255, 255, 0.16);
+  --text-muted: #94a3b8;
+  --text-heading: #f8fafc;
+  --subtle-bg: #18181f;
+  --shadow-val: 0 8px 32px -4px rgba(0, 0, 0, 0.7), 0 4px 12px -2px rgba(0, 0, 0, 0.5);
+  --body-radial: radial-gradient(at 0% 0%, rgba(239, 68, 68, 0.12) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(24, 24, 31, 0.8) 0px, transparent 50%);
+}
+
+@theme {
+  --color-brand-50: #fff5f5;
+  --color-brand-100: #ffe3e3;
+  --color-brand-200: #ffc9c9;
+  --color-brand-300: #ffa8a8;
+  --color-brand-400: #ff8787;
+  --color-brand-500: #ef4444; /* Crimson Red */
+  --color-brand-600: #dc2626;
+  --color-brand-700: #b91c1c;
+  --color-brand-850: #991b1b;
+  --color-brand-900: #7f1d1d;
+  
+  --font-sans: 'Outfit', 'Inter', sans-serif;
+}
+
+@utility card-panel {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-val);
+  border-radius: 1.25rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+@utility card-panel-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@layer base {
+  html, body, #root {
+    background-color: var(--app-bg);
+    color: var(--app-fg);
+    min-height: 100vh;
+  }
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    background-image: var(--body-radial);
+    background-attachment: fixed;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--subtle-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ef4444;
+}
+
+/* Custom glowing pulse for urgent request cards */
+@keyframes pulse-border {
+  0%, 100% {
+    border-color: rgba(239, 68, 68, 0.2);
+    box-shadow: var(--shadow-val), 0 0 14px rgba(239, 68, 68, 0.1);
+  }
+  50% {
+    border-color: rgba(239, 68, 68, 0.5);
+    box-shadow: var(--shadow-val), 0 0 24px rgba(239, 68, 68, 0.25);
+  }
+}
+
+.urgent-pulse {
+  animation: pulse-border 2.5s infinite ease-in-out;
+}
+
+/* LEAFLET MAP DARK MODE CONTROLS & POPUPS */
+.dark .leaflet-control-zoom a {
+  background-color: #18181f !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+.dark .leaflet-control-zoom a:hover {
+  background-color: #272732 !important;
+}
+
+.dark .leaflet-container .leaflet-control-attribution {
+  background-color: rgba(18, 18, 23, 0.85) !important;
+  color: #94a3b8 !important;
+}
+
+.dark .leaflet-container .leaflet-control-attribution a {
+  color: #ef4444 !important;
+}
+
+.dark .leaflet-popup-content-wrapper,
+.dark .leaflet-popup-tip {
+  background-color: #18181f !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+}
