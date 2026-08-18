@@ -32,21 +32,6 @@
 
 ---
 
-## 🛠️ System Architecture
-
-```mermaid
-graph TD
-    User[Client Browser / Mobile] -->|React 18 + Tailwind| Frontend[Vite Frontend]
-    Frontend -->|REST API Requests| Express[Node.js Express Server]
-    Frontend <--|SSE Event Stream| SSEService[Server-Sent Events Stream Manager]
-    Express -->|Haversine Proximity Sorting| MatchEngine[AI Matching & Compatibility Engine]
-    Express -->|SMS Dispatch| MSG91[MSG91 SMS Gateway]
-    Express -->|CRUD Operations| MongoDB[(MongoDB Atlas / In-Memory Server)]
-    MatchEngine -->|Push Event| SSEService
-```
-
----
-
 ## 📋 Technology Stack
 
 | Layer | Technology | Purpose |
