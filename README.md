@@ -5,9 +5,14 @@
 [![Vite](https://img.shields.io/badge/Vite-v5.4-646CFF.svg)](https://vitejs.dev/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-In--Memory%2FAtlas-47A248.svg)](https://www.mongodb.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://vercel.com/)
+[![Vercel Live](https://img.shields.io/badge/Live%20Demo-jeevan--psi.vercel.app-000000?style=for-the-badge&logo=vercel)](https://jeevan-psi.vercel.app/)
 
 > **Jeevan** is an AI-powered, proximity-based MERN stack blood donation platform engineered to bridge the life-critical gap between emergency patients and compatible donors in real-time. Featuring Server-Sent Events (SSE), MSG91 SMS alerts, gamified impact tracking, and dual English/Hindi multi-language accessibility.
+
+---
+
+## 🌐 Live Production Application
+🔗 **Live Web Application**: [https://jeevan-psi.vercel.app/](https://jeevan-psi.vercel.app/)
 
 ---
 
@@ -139,16 +144,18 @@ ok 9 - JWT Config - Throws error in production if JWT_SECRET is missing
 
 ---
 
-## 🚀 Deploy to Vercel
+## 🚀 Live Vercel Deployment
 
-Jeevan comes pre-configured for 1-click **Vercel Serverless Deployment**:
+Jeevan is deployed live on Vercel:
+🌐 **Production URL**: [https://jeevan-psi.vercel.app/](https://jeevan-psi.vercel.app/)
 
+### Deployment Configuration Steps:
 1. Import repository [`https://github.com/kanchan874/Jeevan`](https://github.com/kanchan874/Jeevan) on Vercel.
 2. Set Environment Variables:
    - `NODE_ENV` = `production`
    - `JWT_SECRET` = `<your_secure_random_key>`
    - `MSG91_AUTH_KEY` = `561614AjnBgvmrZj6a83419bP1`
-3. Click **Deploy**!
+3. Vercel automatically deploys both Frontend and Serverless API functions!
 
 ---
 
