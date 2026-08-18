@@ -1,139 +1,183 @@
-# Jeevan (MERN Blood Donation Lifeline)
+# 🩸 Jeevan — Proximity-Based Real-Time Blood Donation Lifeline
 
-Jeevan is a premium full-stack MERN (MongoDB, Express, React, Node.js) conversion of the classic Blood Link Python/Flask application. It matches patients in critical need directly with nearby available compatible donors, calculating real-world proximity distances using the Haversine formula and OpenStreetMap geocoding.
+[![Node.js](https://img.shields.io/badge/Node.js-v18%2B-green.svg)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-v18.3-blue.svg)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-v5.4-646CFF.svg)](https://vitejs.dev/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-In--Memory%2FAtlas-47A248.svg)](https://www.mongodb.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://vercel.com/)
+
+> **Jeevan** is an AI-powered, proximity-based MERN stack blood donation platform engineered to bridge the life-critical gap between emergency patients and compatible donors in real-time. Featuring Server-Sent Events (SSE), MSG91 SMS alerts, gamified impact tracking, and dual English/Hindi multi-language accessibility.
 
 ---
 
-## 1. Feature Map (Flask & CSV to MERN)
+## 🌟 Key Architectural Innovations
 
-| Blood Link (Flask) | Jeevan (MERN) | Description |
+### 1. ⚡ Real-Time SSE Stream & Push Toast Alerts
+- **Server-Sent Events (SSE)** architecture (`/api/requests/live-stream`) delivers sub-second push notifications when donors toggle availability or emergency requests are posted.
+- **Zero Polling Overhead**: Keeps long-lived connections with 20-second heartbeat pings and auto-reconnection logic.
+
+### 2. 🏆 Gamified Donation Streak & Impact Dashboard
+- **Impact Metrics**: Tracks lifetime donations, estimated lives saved (1 unit = 3 lives saved), and 50-day next-eligible countdown timers.
+- **Retention Badges**: Unlocks badges such as **Universal Hero** (O- / O+), **Master Lifesaver** (5+ donations), **Blood Champion** (3+ donations), **First Lifesaver**, and **Verified Lifeline**.
+
+### 3. 🌐 Native English & Hindi Multi-Language Support (`EN` | `हिंदी`)
+- Native translation engine with instant header navbar toggle pill (`🌐 EN | हिंदी`).
+- Translates navigation links, emergency forms, compatibility guides, dashboard stats, and achievement badges seamlessly with `localStorage` state persistence.
+
+### 4. 📍 AI Proximity Matching & Leaflet Live Donor Maps
+- Uses the **Haversine formula** to calculate precise geodesic distances between patient hospitals and nearby active donors.
+- Embeds interactive Leaflet map markers with auto-cleanup lifecycle logic preventing memory leaks.
+- Integrates **MSG91 SMS gateway** with PII phone masking (`98****1234`) for privacy protection.
+
+---
+
+## 🛠️ System Architecture
+
+```mermaid
+graph TD
+    User[Client Browser / Mobile] -->|React 18 + Tailwind| Frontend[Vite Frontend]
+    Frontend -->|REST API Requests| Express[Node.js Express Server]
+    Frontend <--|SSE Event Stream| SSEService[Server-Sent Events Stream Manager]
+    Express -->|Haversine Proximity Sorting| MatchEngine[AI Matching & Compatibility Engine]
+    Express -->|SMS Dispatch| MSG91[MSG91 SMS Gateway]
+    Express -->|CRUD Operations| MongoDB[(MongoDB Atlas / In-Memory Server)]
+    MatchEngine -->|Push Event| SSEService
+```
+
+---
+
+## 📋 Technology Stack
+
+| Layer | Technology | Purpose |
 | :--- | :--- | :--- |
-| **Flask Backend** | Node.js + Express.js | Robust REST API with MVC pattern. |
-| **CSV Storage** | MongoDB Atlas (Mongoose ODM) | Fully queryable documents for Users and Requests. |
-| **Bootstrap 5** | React.js + Tailwind CSS | Sleek, dark-mode glassmorphic user interface. |
-| **Google OAuth** | Passport.js + Dev Bypass | Google Authentication alongside JWT local email/password sign-in. |
-| **WhatsApp Chat** | WhatsApp Click-to-Chat API | Instantly opens a pre-filled emergency template message using free `wa.me` links. |
-| **Google Maps** | OpenStreetMap / Nominatim | Translates address strings to coordinates automatically for **free** (no API key needed). |
-| **24-hr Expire** | MongoDB TTL Indexes | Automatic document deletion from the database exactly 24 hours after creation. |
-| **Matching Query**| Express Route Matrix Logic | Filters available donors based on blood compatibility tables. |
+| **Frontend** | React 18, Vite, Tailwind CSS, Lucide Icons | Responsive glassmorphic UI, high-performance bundling |
+| **State & i18n** | React Context API, Custom Translation Engine | Global Auth, SSE Alerts, English & Hindi translation |
+| **Backend** | Node.js, Express.js (MVC Pattern) | Scalable REST API with CORS security & JWT Auth |
+| **Database** | MongoDB Mongoose ODM, MongoMemoryServer | Hybrid production cloud DB with zero-config in-memory fallback |
+| **Real-time** | Server-Sent Events (SSE) | Server push notifications for live emergency requests |
+| **SMS Gateway** | MSG91 REST API | Instant SMS dispatch to compatible donors near hospital |
+| **Deployment** | Vercel Serverless Functions | Serverless deployment via `vercel.json` |
 
 ---
 
-## 2. Advanced Innovation Add-ons
-
-1. **Smart Proximity & Proximity Ranking (Innovation A)**:
-   - Matches are not just based on blood groups. Jeevan uses the **Haversine formula** to compute physical distances between the donor's coordinates and the hospital coordinates.
-   - Donors are sorted in ascending order of distance (closest first), with a secondary sorting key based on their last availability toggle timestamp to prioritize active responses.
-
-2. **SMS Fallback via Twilio (Innovation B)**:
-   - When an emergency request is created, Jeevan automatically triggers fallback SMS alerts to the top 3 closest compatible donors.
-   - **Simulated Test Feed**: If Twilio credentials are not set in the `.env`, the app automatically logs and routes the message payload to a visual **Live SMS Simulation Outbox Feed** on the dashboard. This allows for zero-cost, seamless testing and demonstrations.
-
----
-
-## 3. Project Structure
+## 📁 Repository Structure
 
 ```
 Jeevan/
-│
 ├── backend/
-│   ├── config/
-│   │   ├── db.js                    # MongoDB mongoose connector
-│   │   └── passport.js              # Google OAuth passport configuration
-│   ├── models/
-│   │   ├── User.js                  # User, phone validation, locations, isAvailable
-│   │   └── BloodRequest.js          # PatientName, hospital coordinates, TTL index
-│   ├── controllers/
-│   │   ├── authController.js        # Register, login, mock Google bypass
-│   │   ├── userController.js        # Profile edits, availability toggles
-│   │   └── requestController.js     # Proximity calculation, compatibility matching, SMS triggers
-│   ├── routes/
-│   │   ├── authRoutes.js            # Authentication routes
-│   │   ├── userRoutes.js            # Availability status triggers
-│   │   └── requestRoutes.js         # Match routes and simulation feed
-│   ├── middleware/
-│   │   └── authMiddleware.js        # JWT header token validator
-│   ├── utils/
-│   │   ├── geocode.js               # Nominatim OpenStreetMap Geocoder
-│   │   └── smsService.js            # Twilio alert dispatcher / Simulation outbox log
-│   ├── seed.js                      # DB seeding script with mock Indian metro donors
-│   ├── server.js                    # Main Express server entry point
-│   └── .env                         # Ports and environment credentials
-│
-└── frontend/
-    ├── src/
-    │   ├── components/
-    │   │   ├── Navbar.jsx           # Nav header with live availability switch
-    │   │   ├── DonorCard.jsx        # Matched donor visualizer (WhatsApp & Map Link)
-    │   │   └── RequestCard.jsx      # Active emergency calls (Remaining hours countdown)
-    │   ├── context/
-    │   │   └── AuthContext.jsx      # Context state for local, Google, and profile events
-    │   ├── services/
-    │   │   └── api.js               # Intercepted Axios request client
-    │   ├── pages/
-    │   │   ├── Home.jsx             # Public landing page with Quick Lookup Sandbox
-    │   │   ├── Login.jsx            # glassmorphic Auth portal (with 1-click test logs)
-    │   │   ├── Register.jsx         # Sign up with Indian phone and location geocoding
-    │   │   ├── Dashboard.jsx        # Live stats, user requests, and Live SMS simulation terminal
-    │   │   ├── CreateRequest.jsx    # Emergency posting form
-    │   │   ├── DonorList.jsx        # Proximity matches list showing active notifications
-    │   │   └── Profile.jsx          # Profile settings
-    │   ├── App.jsx                  # Router setup and Route Guarding
-    │   ├── main.jsx                 # Vite mounting root
-    │   └── index.css                # Base Tailwind directives and custom animation classes
-    ├── tailwind.config.js           # Theme settings and file directories content scanning
-    ├── postcss.config.js            # Styles compiling configs
-    └── index.html                   # HTML base template with SEO optimization tags
+│   ├── config/              # Database connection & JWT secret validator
+│   ├── controllers/         # Auth, User, and Blood Request controllers
+│   ├── middleware/          # JWT auth guards & security headers
+│   ├── models/              # Mongoose schemas (User, BloodRequest)
+│   ├── routes/              # Express API endpoint definitions
+│   ├── services/            # SSE Manager & MSG91 SMS Service
+│   ├── tests/               # Automated unit test suite (Eligibility, Security, SSE, Impact, i18n)
+│   ├── utils/               # Haversine distance calculator & Impact badge computer
+│   ├── seed.js              # Database seeder with Indian metro donors
+│   └── server.js            # Express application entry point
+├── frontend/
+│   ├── src/
+│   │   ├── components/      # Navbar, DonationImpactCard, LiveDonorMap, RequestCard, LiveToast
+│   │   ├── context/         # AuthContext, LiveAlertContext, LanguageContext
+│   │   ├── i18n/            # English & Hindi translation dictionaries
+│   │   ├── pages/           # Home, Dashboard, CreateRequest, MyDonations, Profile, Register
+│   │   └── services/        # Axios API interceptor client
+│   └── vite.config.js       # Vite bundler configuration
+├── vercel.json              # Vercel serverless deployment manifest
+└── README.md                # Project documentation
 ```
 
 ---
 
-## 4. Run Locally
+## ⚡ Quick Start (Run Locally)
 
-### Prerequisites
-- Node.js installed
-- MongoDB installed locally and running, or a MongoDB Atlas cloud connection URI.
+### 1. Prerequisites
+- **Node.js**: v18.0.0 or higher
+- **npm**: v9.0.0 or higher
 
-### Step 1: Clone and install backend packages
+### 2. Installation
 ```bash
-# Go to backend
+# Clone the repository
+git clone https://github.com/kanchan874/Jeevan.git
+cd Jeevan
+
+# Install backend dependencies
 cd backend
 npm install
 
-# Start database seeding to populate mock donors across Chennai, Bangalore, and Mumbai
+# Populate mock donor database (17 pre-seeded donors across Mumbai, Chennai, Bangalore)
 node seed.js
+
+# Install frontend dependencies
+cd ../frontend
+npm install
 ```
 
-### Step 2: Configure Environment Variables
-Edit `backend/.env` (optional, default values will run the app with local database fallback):
-- `MONGO_URI`: Set to your MongoDB Atlas connection string (or leave blank to use local `mongodb://127.0.0.1:27017/jeevan`).
-- `JWT_SECRET`: Security encryption key.
-- `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` / `TWILIO_PHONE_NUMBER`: Twilio SMS settings (optional).
+### 3. Run Development Servers
+```bash
+# Terminal 1: Start Backend API (Port 5000)
+cd backend
+npm run dev
 
-### Step 3: Run Servers
+# Terminal 2: Start Frontend App (Port 5173)
+cd frontend
+npm run dev
+```
 
-1. **Start backend Express server**:
-   ```bash
-   cd backend
-   npm run dev
-   # Binds to port 5000
-   ```
-
-2. **Start frontend Vite development server**:
-   ```bash
-   cd ../frontend
-   npm install
-   npm run dev
-   # Opens page at http://localhost:5173/
-   ```
+Visit [`http://localhost:5173`](http://localhost:5173) in your browser!
 
 ---
 
-## 5. Verification Checklist (Interactive Demo Flow)
+## 🧪 Automated Unit Testing
 
-1. **Proximity Search Sandbox**: On the landing page, perform a search for blood group `O-` at `T Nagar, Chennai`. Observe that matched donor cards load instantly displaying correct distance markings (Rajesh Kumar is at `0.00 km` since he's pre-seeded at T Nagar!).
-2. **One-Click Sandbox Authentication**: Navigate to `/login`. Click the **Rajesh (O- Donor)** sandbox button. It logs you in and redirects to the Dashboard.
-3. **Live Availability Toggle**: On the dashboard or in the navbar, toggle the Availability switch. The status will change dynamically.
-4. **Post an Emergency Request**: Click **Request Blood** in the navbar. Request `A+` blood for patient `Sanjay Dutt`, `2` units, at `Adyar, Chennai`. Submit the request.
-5. **Verify Spatial Distance Sorting**: Observe you are redirected to the matching page showing Priya Sundaram `A+` at `0.00 km` (she is pre-seeded at Adyar) and Rajesh Kumar `O-` at `5.51 km` (compatible universal donor at T Nagar, Chennai). Both show green WhatsApp message keys and Map search links.
-6. **Live SMS Fallback simulation**: Navigate back to the Dashboard. Verify the **SMS Fallback System Log** block. It will display the simulated SMS alerts dispatched to the matched donors detailing patient name, units, and distance.
+Execute the automated test suite covering eligibility calculation, JWT security, SSE streaming, impact badges, and i18n key parity:
+
+```bash
+cd backend
+npm test
+```
+
+**Test Output:**
+```
+TAP version 13
+ok 1 - Eligibility Calculator - Healthy Adult Donor should be Eligible
+ok 2 - Eligibility Calculator - Underage Donor should require Medical Review
+ok 3 - Eligibility Calculator - Low Hemoglobin should be Temporarily Deferred
+ok 4 - Multi-Language i18n - English and Hindi dictionaries have matching keys
+ok 5 - Impact Calculator - Calculates lives saved as 3x donation count
+ok 6 - Impact Calculator - Unlocks Universal Hero badge for O- donors
+ok 7 - Impact Calculator - Calculates countdown for recent donation
+ok 8 - JWT Config - Returns development fallback secret in non-production mode
+ok 9 - JWT Config - Throws error in production if JWT_SECRET is missing
+```
+
+---
+
+## 🚀 Deploy to Vercel
+
+Jeevan comes pre-configured for 1-click **Vercel Serverless Deployment**:
+
+1. Import repository [`https://github.com/kanchan874/Jeevan`](https://github.com/kanchan874/Jeevan) on Vercel.
+2. Set Environment Variables:
+   - `NODE_ENV` = `production`
+   - `JWT_SECRET` = `<your_secure_random_key>`
+   - `MSG91_AUTH_KEY` = `561614AjnBgvmrZj6a83419bP1`
+3. Click **Deploy**!
+
+---
+
+## 👥 Engineering Team & Contributors
+
+| Contributor | Role / Core Focus | GitHub / Profile |
+| :--- | :--- | :--- |
+| **Kanchan Gaikwad** | Lead MERN Developer & Architecture | [@kanchan874](https://github.com/kanchan874) |
+| **Shrushti** | Frontend UI/UX Specialist | [@shrushti88](https://github.com/shrushti88) |
+| **Gayatri Vidhate** | Backend & Database Systems | [@gayatri-vidhate](https://github.com/gayatri-vidhate) |
+| **Dipansh** | Real-time SSE & API Integration | [@dipansh876](https://github.com/dipansh876) |
+| **Utkarsh Punkar** | QA & Security Hardening | [@utkarsh-punkar](https://github.com/utkarsh-punkar) |
+
+---
+
+## 📄 License
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
